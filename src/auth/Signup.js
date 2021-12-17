@@ -26,13 +26,13 @@ function Signup() {
       });
   }, []);
   return (
-    <>
+    <div style={{ backgroundColor: "#BDC7D0" }}>
       {home === "student" ? (
         <StudentSignup />
       ) : home === "tutor" ? (
         <TutorSignup />
       ) : (
-        <Container>
+        <Container style={{ backgroundColor: "#BDC7D0" }}>
           <Row>
             <Col>
               <Card style={{ width: "18rem" }}>
@@ -70,7 +70,7 @@ function Signup() {
       <Button variant="primary" onClick={() => setHome("home")}>
         Back to Sign Up Screen
       </Button>
-    </>
+    </div>
   );
 }
 export default Signup;

@@ -205,6 +205,32 @@ def studentSignup():
     # return flask.redirect("/")
 
 
+@app.route("/filter", methods=["POST", "GET"])
+def filterTutor():
+    languageInput = flask.request.json.get("language")
+    tutorDB = User.query.filter_by(role="tutor").all()
+
+    tutorList = []
+    username = []
+    bio = []
+    language = []
+    for i in tutorDB:
+        if languageInput in i.language:
+            username.append(i.username)
+            language.append(i.language)
+            bio.append(i.bio)
+    tutorList = [
+        {
+            "username": username,
+            "language": language,
+            "bio": bio,
+        }
+        for username, language, bio in zip(username, language, bio)
+    ]
+
+    return flask.jsonify({"tutor": tutorList})
+
+
 @app.route("/")
 def main():
     return flask.redirect(url_for("bp.index"))
