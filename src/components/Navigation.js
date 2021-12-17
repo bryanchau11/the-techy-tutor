@@ -1,7 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import { Navbar, Container, Nav } from "react-bootstrap";
+import { Navbar, Container, Nav, Form, Button } from "react-bootstrap";
 function Navigation() {
   return (
     <Navbar style={{ backgroundColor: "#CE9338" }}>
@@ -18,6 +18,13 @@ function Navigation() {
           <Nav.Link as={Link} to="/login">
             Login
           </Nav.Link>
+        </Nav>
+        <Nav className="float-right">
+          <Form method="POST" action="/logout">
+            <Button className="font-nav-bar" variant="danger" type="submit">
+              Logout
+            </Button>
+          </Form>
         </Nav>
       </Container>
     </Navbar>

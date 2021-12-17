@@ -1,13 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import StudentSignup from "./StudentSignup";
 import TutorSignup from "./TutorSignup";
 import tutorCard from "../assets/tutorCard.jpg";
 import studentCard from "../assets/studentCard.jpg";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const [home, setHome] = useState("home");
-
+  const navigate = useNavigate();
+  // redirect to home if logged in
+  useEffect(() => {
+    fetch("/get_username", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.username !== "") {
+          navigate("/index");
+        }
+      });
+  }, []);
   return (
     <>
       {home === "student" ? (

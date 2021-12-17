@@ -94,16 +94,25 @@ app.register_blueprint(bp)
 @app.route("/logout", methods=["POST"])
 @login_required
 def logout():
-    logout_user()
-    return redirect("/")
+    try:
+        logout_user()
+        return redirect("/")
+    except:
+        return redirect("/")
 
 
-""" 
-@app.route("/logout", methods=["POST"])
-@login_required
-def logout():
-    logout_user()
-    return redirect("/")
+@app.route("/get_username", methods=["POST"])
+def get_username():
+    """
+    Get current username from database.
+    """
+    try:
+        username = current_user.username
+        role = current_user.role
+    except:
+        username = ""
+        role = ""
+    return flask.jsonify({"status": 200, "username": username, "role": role})
 
 
 @app.route("/login", methods=["POST", "GET"])
@@ -111,18 +120,17 @@ def login():
     if current_user.is_authenticated:
         return redirect("/")
     if flask.request.method == "POST":
-        username = flask.request.json.get("username")
+        email = flask.request.json.get("email")
         password = flask.request.json.get("password")
-        my_user = User.query.filter_by(username=username).first()
-        if username == "" or password == "":
+        my_user = User.query.filter_by(email=email).first()
+        if email == "" or password == "":
             return flask.jsonify({"result": "no"})
         if not my_user or not check_password_hash(my_user.password, password):
             return flask.jsonify({"result": "no"})
         login_user(my_user)
 
         return flask.jsonify({"result": "yes"})
-    return flask.redirect("/")
-"""
+    return redirect("/")
 
 
 @app.route("/", defaults={"path": ""})
@@ -148,6 +156,7 @@ def tutorSignup():
         language = flask.request.json.get("language")
         languageStr = ",".join(language)
         bestDescribe = flask.request.json.get("bestDesribe")
+        bio = flask.request.json.get("bio")
         try:
             new_user = User(
                 email=email,
@@ -156,6 +165,7 @@ def tutorSignup():
                 password=generate_password_hash(password, method="sha256"),
                 language=languageStr,
                 best_describe=bestDescribe,
+                bio=bio,
             )
             db.session.add(new_user)
             for i in language:
@@ -167,28 +177,32 @@ def tutorSignup():
     # return flask.redirect("/")
 
 
-"""
-@app.route("/signup", methods=["POST", "GET"])
-def signup():
+@app.route("/studentSignup", methods=["POST", "GET"])
+def studentSignup():
     if current_user.is_authenticated:
         return flask.redirect("/")
     if flask.request.method == "POST":
+        email = flask.request.json.get("email")
         username = flask.request.json.get("username")
         password = flask.request.json.get("password")
-        if username == "" or password == "":
+        language = flask.request.json.get("language")
+        languageStr = ",".join(language)
+        try:
+            new_user = User(
+                email=email,
+                role="student",
+                username=username,
+                password=generate_password_hash(password, method="sha256"),
+                language=languageStr,
+            )
+            db.session.add(new_user)
+            for i in language:
+                db.session.add(Language(email=email, role="student", language=i))
+            db.session.commit()
+            return flask.jsonify({"result": "yes"})
+        except:
             return flask.jsonify({"result": "no"})
-        user = User.query.filter_by(username=username).first()
-        if user:
-            return flask.jsonify({"result": "no2"})
-        new_user = User(
-            username=username,
-            password=generate_password_hash(password, method="sha256"),
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        return flask.jsonify({"result": "yes"})
-    return flask.redirect("/")
-"""
+    # return flask.redirect("/")
 
 
 @app.route("/")

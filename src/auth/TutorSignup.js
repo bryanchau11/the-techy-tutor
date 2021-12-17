@@ -7,6 +7,7 @@ import tutorCard from "../assets/tutorCard.jpg";
 const Swal = require("sweetalert2");
 function TutorSignup() {
   const emailInput = useRef(null);
+  const bio = useRef(null);
   const userNameInput = useRef(null);
   const passWordInput = useRef(null);
   //const language = useRef(null);
@@ -57,7 +58,8 @@ function TutorSignup() {
         username: userNameInput.current.value,
         password: passWordInput.current.value,
         language: param,
-        bestDescribe: bestDescribe
+        bestDescribe: bestDescribe,
+        bio: bio.current.value
       };
       console.log(requestData);
     }
@@ -79,8 +81,8 @@ function TutorSignup() {
         } else {
           Swal.fire({
             icon: "success",
-            title: "Good",
-            text: "Sign up success"
+            title: "Success!",
+            text: "Sign up successfully"
           });
           navigate("/index");
         }
@@ -98,7 +100,7 @@ function TutorSignup() {
               alt=""
             />
           </div>
-          <div className="col-md-6 bg-white p-5">
+          <div className="col-md-6  p-5" style={{ backgroundColor: "#CE9338" }}>
             <h3 className="pb-3">Tutor Sign Up</h3>
             <div className="form-style">
               <form onSubmit={signup}>
@@ -126,26 +128,39 @@ function TutorSignup() {
                     ref={passWordInput}
                   />
                 </div>
-                <Select
-                  isMulti
-                  onChange={setLanguageSelect}
-                  aria-placeholder="List your languages"
-                  options={language}
-                />
-                <FloatingLabel
-                  controlId="floatingSelectGrid"
-                  label="What best describes you?"
-                >
-                  <Form.Select aria-label="Pick here" onChange={handleChange}>
-                    <option value="High School Student">
-                      High School Student
-                    </option>
-                    <option value="College Student">College Student</option>
-                    <option value="Professional">Professional</option>
-                    <option value="Self-taught">Self-taught</option>
-                  </Form.Select>
-                </FloatingLabel>
-
+                <div className="form-group pb-3">
+                  <Select
+                    isMulti
+                    onChange={setLanguageSelect}
+                    aria-placeholder="List your languages"
+                    options={language}
+                  />
+                </div>
+                <div className="form-group pb-3">
+                  <FloatingLabel
+                    controlId="floatingSelectGrid"
+                    label="What best describes you?"
+                  >
+                    <Form.Select aria-label="Pick here" onChange={handleChange}>
+                      <option value="High School Student">
+                        High School Student
+                      </option>
+                      <option value="College Student">College Student</option>
+                      <option value="Professional">Professional</option>
+                      <option value="Self-taught">Self-taught</option>
+                    </Form.Select>
+                  </FloatingLabel>
+                </div>
+                <div className="form-group pb-3">
+                  <FloatingLabel label="Bio">
+                    <Form.Control
+                      as="textarea"
+                      ref={bio}
+                      placeholder="Enter here"
+                      style={{ height: "100px" }}
+                    />
+                  </FloatingLabel>
+                </div>
                 <div className="pb-2">
                   <button
                     onClick={signup}

@@ -1,6 +1,90 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import Select from "react-select";
+import data from "./data";
+import { useNavigate, Link } from "react-router-dom";
+import { Form, FloatingLabel } from "react-bootstrap";
 import studentCard from "../assets/studentCard.jpg";
+const Swal = require("sweetalert2");
 function StudentSignup() {
+  const emailInput = useRef(null);
+  const userNameInput = useRef(null);
+  const passWordInput = useRef(null);
+  const navigate = useNavigate();
+  const [language, setLanguageOptions] = useState([]);
+  const [languageSelect, setLanguageSelect] = useState([]);
+
+  useEffect(() => {
+    const languageOptions = [];
+    for (var i = 0; i < data.length; i++) {
+      languageOptions.push({
+        value: data[i],
+        label: data[i]
+      });
+    }
+    setLanguageOptions(languageOptions);
+  }, [languageSelect]);
+
+  const [bestDescribe, setBestDescribe] = useState("High School Student");
+
+  const handleChange = (e) => {
+    setBestDescribe(e.target.value);
+  };
+  // Sign up function
+  var requestData = {};
+  const signup = (event) => {
+    event.preventDefault();
+    const param = [];
+    if (languageSelect != null) {
+      for (let i = 0; i < languageSelect.length; i++) {
+        param.push(languageSelect[i].label);
+      }
+    }
+    if (
+      userNameInput.current.value === "" ||
+      passWordInput.current.value === "" ||
+      emailInput.current.value === "" ||
+      languageSelect.length === 0
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please check your inputs!"
+      });
+    } else {
+      requestData = {
+        email: emailInput.current.value,
+        username: userNameInput.current.value,
+        password: passWordInput.current.value,
+        language: param,
+        bestDescribe: bestDescribe
+      };
+      console.log(requestData);
+    }
+    fetch("/studentSignup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestData)
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result == "no") {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "User exists or please double check info"
+          });
+        } else {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Sign up successfully"
+          });
+          navigate("/index");
+        }
+      });
+  };
   return (
     <>
       <div className="container">
@@ -13,17 +97,24 @@ function StudentSignup() {
               alt=""
             />
           </div>
-          <div className="col-md-6 bg-white p-5">
+          <div className="col-md-6  p-5" style={{ backgroundColor: "#CE9338" }}>
             <h3 className="pb-3">Student Sign Up</h3>
             <div className="form-style">
-              <form>
+              <form onSubmit={signup}>
+                <div className="form-group pb-3">
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    className="form-control"
+                    ref={userNameInput}
+                  />
+                </div>
                 <div className="form-group pb-3">
                   <input
                     type="email"
                     placeholder="Email"
                     className="form-control"
-                    id="exampleInputEmail1"
-                    aria-describedby="emailHelp"
+                    ref={emailInput}
                   />
                 </div>
                 <div className="form-group pb-3">
@@ -31,40 +122,40 @@ function StudentSignup() {
                     type="password"
                     placeholder="Password"
                     className="form-control"
-                    id="exampleInputPassword1"
+                    ref={passWordInput}
                   />
                 </div>
-                <div className="d-flex align-items-center justify-content-between">
-                  <div className="d-flex align-items-center">
-                    <input name="" type="checkbox" value="" />{" "}
-                    <span className="pl-2 font-weight-bold">Remember Me</span>
-                  </div>
-                  <div>
-                    <a href="#">Forget Password?</a>
-                  </div>
+                <div className="form-group pb-3">
+                  <Select
+                    isMulti
+                    onChange={setLanguageSelect}
+                    aria-placeholder="List your languages"
+                    options={language}
+                  />
+                </div>
+                <div className="form-group pb-3">
+                  <FloatingLabel
+                    controlId="floatingSelectGrid"
+                    label="What best describes you?"
+                  >
+                    <Form.Select aria-label="Pick here" onChange={handleChange}>
+                      <option value="High School Student">
+                        High School Student
+                      </option>
+                      <option value="College Student">College Student</option>
+                      <option value="Self-taught">Self-taught</option>
+                    </Form.Select>
+                  </FloatingLabel>
                 </div>
                 <div className="pb-2">
                   <button
-                    type="submit"
+                    onClick={signup}
                     className="btn btn-dark w-100 font-weight-bold mt-2"
                   >
-                    Submit
+                    Get Matched!
                   </button>
                 </div>
               </form>
-              <div className="sideline">OR</div>
-              <div>
-                <button
-                  type="submit"
-                  className="btn btn-primary w-100 font-weight-bold mt-2"
-                >
-                  <i className="fa fa-facebook" aria-hidden="true"></i> Login
-                  With Facebook
-                </button>
-              </div>
-              <div className="pt-4 text-center">
-                Get Members Benefit. <a href="#">Sign Up</a>
-              </div>
             </div>
           </div>
         </div>
