@@ -35,17 +35,29 @@ app.secret_key = b"I am a secret key!"
 
 db = SQLAlchemy(app)
 
-"""
+
 class User(UserMixin, db.Model):
-    
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80))
-    password = db.Column(db.String(700))
+    email = db.Column(db.String(100), unique=True)
+    role = db.Column(db.String(80), nullable=False)
+    username = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(700), nullable=False)
+    language = db.Column(db.String(700), nullable=False)
+    skillset = db.Column(db.String(700))
+    best_describe = db.Column(db.String(100))
+    bio = db.Column(db.String(700))
+
+
+class Language(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100))
+    role = db.Column(db.String(80))
+    language = db.Column(db.String(700))
 
 
 db.create_all()
-"""
+
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
@@ -54,7 +66,7 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_name):
 
-    return
+    return User.query.get(user_name)
 
 
 bp = flask.Blueprint("bp", __name__, template_folder="./build")
@@ -62,13 +74,13 @@ bp = flask.Blueprint("bp", __name__, template_folder="./build")
 
 @bp.route("/index")
 def index():
-    """
+
     try:
         username = current_user.username
     except:
         username = "PLEASE LOGIN"
-    """
-    DATA = {"username": "some data"}
+
+    DATA = {"username": username}
     data = json.dumps(DATA)
     return flask.render_template(
         "index.html",
@@ -77,6 +89,14 @@ def index():
 
 
 app.register_blueprint(bp)
+
+
+@app.route("/logout", methods=["POST"])
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
+
 
 """ 
 @app.route("/logout", methods=["POST"])
@@ -115,6 +135,36 @@ def catch_all(path):
         [type]: [description]
     """
     return flask.redirect(flask.url_for("bp.index"))
+
+
+@app.route("/tutorSignup", methods=["POST", "GET"])
+def tutorSignup():
+    if current_user.is_authenticated:
+        return flask.redirect("/")
+    if flask.request.method == "POST":
+        email = flask.request.json.get("email")
+        username = flask.request.json.get("username")
+        password = flask.request.json.get("password")
+        language = flask.request.json.get("language")
+        languageStr = ",".join(language)
+        bestDescribe = flask.request.json.get("bestDesribe")
+        try:
+            new_user = User(
+                email=email,
+                role="tutor",
+                username=username,
+                password=generate_password_hash(password, method="sha256"),
+                language=languageStr,
+                best_describe=bestDescribe,
+            )
+            db.session.add(new_user)
+            for i in language:
+                db.session.add(Language(email=email, role="tutor", language=i))
+            db.session.commit()
+            return flask.jsonify({"result": "yes"})
+        except:
+            return flask.jsonify({"result": "no"})
+    # return flask.redirect("/")
 
 
 """
