@@ -87,13 +87,13 @@ function StudentSignup() {
   };
   return (
     <>
-      <div className="container">
+      <div className="container" style={{ backgroundColor: "#BDC7D0" }}>
         <div className="row m-5 no-gutters shadow-lg">
           <div className="col-md-6 d-none d-md-block">
             <img
               src={studentCard}
               className="img-fluid"
-              style={{ minHeight: "100%" }}
+              style={{ minHeight: "100%", minWidth: "100%" }}
               alt=""
             />
           </div>

@@ -64,20 +64,31 @@ function Login() {
         }
       });
   }, []);
+  const headerStyle = {
+    fontFamily: "Poppins",
+    fontSize: "31px",
+    fontStyle: "normal",
+    fontWeight: "700",
+    lineHeight: "72px",
+    letterSpacing: "0.245em",
+    textAlign: "left"
+  };
   return (
     <>
-      <div className="container">
+      <div className="container" style={{ backgroundColor: "#BDC7D0" }}>
         <div className="row m-5 no-gutters shadow-lg">
           <div className="col-md-6 d-none d-md-block">
             <img
               src={loginCard}
               className="img-fluid"
-              style={{ minHeight: "100%" }}
+              style={{ minHeight: "100%", width: "auto" }}
               alt=""
             />
           </div>
           <div className="col-md-6  p-5" style={{ backgroundColor: "#CE9338" }}>
-            <h3 className="pb-3">Login here</h3>
+            <span className="pb-3" style={headerStyle}>
+              THE TECHY TUTOR
+            </span>
             <div className="form-style">
               <form onSubmit={login}>
                 <div className="form-group pb-3">
