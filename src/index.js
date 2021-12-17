@@ -3,13 +3,19 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./index.css";
 import App from "./App";
+import Login from "./auth/Login";
+import Signup from "./auth/Signup";
+import Navigation from "./components/Navigation";
 import reportWebVitals from "./reportWebVitals";
 
 const routing = (
   <Router>
     <div>
+      <Navigation />
       <Routes>
         <Route exact path="/index" element={<App />} />
+        <Route exact path="/login" element={<Login />} />
+        <Route exact path="/signup" element={<Signup />} />
       </Routes>
     </div>
   </Router>
