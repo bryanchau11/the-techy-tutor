@@ -35,17 +35,29 @@ app.secret_key = b"I am a secret key!"
 
 db = SQLAlchemy(app)
 
-"""
+
 class User(UserMixin, db.Model):
-    
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80))
-    password = db.Column(db.String(700))
+    email = db.Column(db.String(100), unique=True)
+    role = db.Column(db.String(80), nullable=False)
+    username = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(700), nullable=False)
+    language = db.Column(db.String(700), nullable=False)
+    skillset = db.Column(db.String(700))
+    best_describe = db.Column(db.String(100))
+    bio = db.Column(db.String(700))
+
+
+class Language(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100))
+    role = db.Column(db.String(80))
+    language = db.Column(db.String(700))
 
 
 db.create_all()
-"""
+
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
@@ -54,7 +66,7 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_name):
 
-    return
+    return User.query.get(user_name)
 
 
 bp = flask.Blueprint("bp", __name__, template_folder="./build")
@@ -62,13 +74,13 @@ bp = flask.Blueprint("bp", __name__, template_folder="./build")
 
 @bp.route("/index")
 def index():
-    """
+
     try:
         username = current_user.username
     except:
         username = "PLEASE LOGIN"
-    """
-    DATA = {"username": "some data"}
+
+    DATA = {"username": username}
     data = json.dumps(DATA)
     return flask.render_template(
         "index.html",
@@ -78,12 +90,29 @@ def index():
 
 app.register_blueprint(bp)
 
-""" 
+
 @app.route("/logout", methods=["POST"])
 @login_required
 def logout():
-    logout_user()
-    return redirect("/")
+    try:
+        logout_user()
+        return redirect("/")
+    except:
+        return redirect("/")
+
+
+@app.route("/get_username", methods=["POST"])
+def get_username():
+    """
+    Get current username from database.
+    """
+    try:
+        username = current_user.username
+        role = current_user.role
+    except:
+        username = ""
+        role = ""
+    return flask.jsonify({"status": 200, "username": username, "role": role})
 
 
 @app.route("/login", methods=["POST", "GET"])
@@ -91,18 +120,17 @@ def login():
     if current_user.is_authenticated:
         return redirect("/")
     if flask.request.method == "POST":
-        username = flask.request.json.get("username")
+        email = flask.request.json.get("email")
         password = flask.request.json.get("password")
-        my_user = User.query.filter_by(username=username).first()
-        if username == "" or password == "":
+        my_user = User.query.filter_by(email=email).first()
+        if email == "" or password == "":
             return flask.jsonify({"result": "no"})
         if not my_user or not check_password_hash(my_user.password, password):
             return flask.jsonify({"result": "no"})
         login_user(my_user)
 
         return flask.jsonify({"result": "yes"})
-    return flask.redirect("/")
-"""
+    return redirect("/")
 
 
 @app.route("/", defaults={"path": ""})
@@ -117,28 +145,64 @@ def catch_all(path):
     return flask.redirect(flask.url_for("bp.index"))
 
 
-"""
-@app.route("/signup", methods=["POST", "GET"])
-def signup():
+@app.route("/tutorSignup", methods=["POST", "GET"])
+def tutorSignup():
     if current_user.is_authenticated:
         return flask.redirect("/")
     if flask.request.method == "POST":
+        email = flask.request.json.get("email")
         username = flask.request.json.get("username")
         password = flask.request.json.get("password")
-        if username == "" or password == "":
+        language = flask.request.json.get("language")
+        languageStr = ",".join(language)
+        bestDescribe = flask.request.json.get("bestDesribe")
+        bio = flask.request.json.get("bio")
+        try:
+            new_user = User(
+                email=email,
+                role="tutor",
+                username=username,
+                password=generate_password_hash(password, method="sha256"),
+                language=languageStr,
+                best_describe=bestDescribe,
+                bio=bio,
+            )
+            db.session.add(new_user)
+            for i in language:
+                db.session.add(Language(email=email, role="tutor", language=i))
+            db.session.commit()
+            return flask.jsonify({"result": "yes"})
+        except:
             return flask.jsonify({"result": "no"})
-        user = User.query.filter_by(username=username).first()
-        if user:
-            return flask.jsonify({"result": "no2"})
-        new_user = User(
-            username=username,
-            password=generate_password_hash(password, method="sha256"),
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        return flask.jsonify({"result": "yes"})
-    return flask.redirect("/")
-"""
+    # return flask.redirect("/")
+
+
+@app.route("/studentSignup", methods=["POST", "GET"])
+def studentSignup():
+    if current_user.is_authenticated:
+        return flask.redirect("/")
+    if flask.request.method == "POST":
+        email = flask.request.json.get("email")
+        username = flask.request.json.get("username")
+        password = flask.request.json.get("password")
+        language = flask.request.json.get("language")
+        languageStr = ",".join(language)
+        try:
+            new_user = User(
+                email=email,
+                role="student",
+                username=username,
+                password=generate_password_hash(password, method="sha256"),
+                language=languageStr,
+            )
+            db.session.add(new_user)
+            for i in language:
+                db.session.add(Language(email=email, role="student", language=i))
+            db.session.commit()
+            return flask.jsonify({"result": "yes"})
+        except:
+            return flask.jsonify({"result": "no"})
+    # return flask.redirect("/")
 
 
 @app.route("/")
