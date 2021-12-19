@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import loginCard from "../assets/login.jpg";
+import Navigation from "../components/Navigation";
 const Swal = require("sweetalert2");
 function Login() {
   const emailInput = useRef(null);
@@ -75,6 +76,7 @@ function Login() {
   };
   return (
     <>
+      <Navigation />
       <div className="container" style={{ backgroundColor: "#BDC7D0" }}>
         <div className="row m-5 no-gutters shadow-lg">
           <div className="col-md-6 d-none d-md-block">
