@@ -11,7 +11,6 @@ import reportWebVitals from "./reportWebVitals";
 const routing = (
   <Router>
     <div style={{ backgroundColor: "#BDC7D0" }}>
-      <Navigation />
       <Routes>
         <Route exact path="/index" element={<App />} />
         <Route exact path="/login" element={<Login />} />

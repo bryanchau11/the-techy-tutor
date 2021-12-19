@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
+import Navigation from "./components/Navigation";
 import data from "../src/auth/data";
 import "./App.css";
 
@@ -43,6 +44,7 @@ function App() {
   }, [language]);
   return (
     <div style={{ backgroundColor: "#BDC7D0" }}>
+      <Navigation />
       {flag === false ? (
         <div>Please login</div>
       ) : role === "tutor" ? (
