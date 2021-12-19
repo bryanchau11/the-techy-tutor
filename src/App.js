@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import Navigation from "./components/Navigation";
 import data from "../src/auth/data";
 import "./App.css";
-
+const uuidv4 = require("uuid/v4");
 function App() {
   const [name, setName] = useState("");
   const [role, setRole] = useState(null);
   const [flag, setFlag] = useState(true);
+  const navigate = useNavigate();
   useEffect(() => {
     fetch("/get_username", {
       method: "POST",
@@ -42,6 +43,10 @@ function App() {
         filterTutor(data.tutor);
       });
   }, [language]);
+
+  const goToRoom = (e) => {
+    const roomID = uuidv4();
+  };
   return (
     <div style={{ backgroundColor: "#BDC7D0" }}>
       <Navigation />
@@ -93,7 +98,11 @@ function App() {
 
                         <p className="card-text">{item.bio}</p>
 
-                        <Button as={Link} to="/index" variant="dark">
+                        <Button
+                          variant="dark"
+                          value={item.id}
+                          onClick={(e) => goToRoom(e.target.value)}
+                        >
                           LET'S CHAT
                         </Button>
                       </div>
