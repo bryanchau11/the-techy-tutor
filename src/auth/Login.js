@@ -76,7 +76,6 @@ function Login() {
   };
   return (
     <>
-      <Navigation />
       <div className="container" style={{ backgroundColor: "#BDC7D0" }}>
         <div className="row m-5 no-gutters shadow-lg">
           <div className="col-md-6 d-none d-md-block">

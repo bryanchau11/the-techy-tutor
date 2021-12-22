@@ -56,6 +56,13 @@ class Language(db.Model):
     language = db.Column(db.String(700))
 
 
+class Chat(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tutor = db.Column(db.String(100))
+    student = db.Column(db.String(80))
+    roomID = db.Column(db.String(700))
+
+
 db.create_all()
 
 login_manager = LoginManager()
@@ -107,12 +114,17 @@ def get_username():
     Get current username from database.
     """
     try:
+
         username = current_user.username
+        email = current_user.email
         role = current_user.role
     except:
         username = ""
+        email = ""
         role = ""
-    return flask.jsonify({"status": 200, "username": username, "role": role})
+    return flask.jsonify(
+        {"status": 200, "username": username, "role": role, "email": email}
+    )
 
 
 @app.route("/login", methods=["POST", "GET"])
@@ -211,21 +223,24 @@ def filterTutor():
     tutorDB = User.query.filter_by(role="tutor").all()
 
     tutorList = []
+    id = []
     username = []
     bio = []
     language = []
     for i in tutorDB:
         if languageInput in i.language:
+            id.append(i.id)
             username.append(i.username)
             language.append(i.language)
             bio.append(i.bio)
     tutorList = [
         {
+            "id": id,
             "username": username,
             "language": language,
             "bio": bio,
         }
-        for username, language, bio in zip(username, language, bio)
+        for id, username, language, bio in zip(id, username, language, bio)
     ]
 
     return flask.jsonify({"tutor": tutorList})

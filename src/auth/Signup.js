@@ -28,7 +28,6 @@ function Signup() {
   }, []);
   return (
     <>
-      <Navigation />
       <div style={{ backgroundColor: "#BDC7D0" }}>
         {home === "student" ? (
           <StudentSignup />
