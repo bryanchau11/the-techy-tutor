@@ -3,11 +3,9 @@ import { useParams } from "react-router-dom";
 import Navigation from "./Navigation";
 
 function ChatRoom() {
-  const { roomID } = useParams();
   return (
     <>
-      <Navigation />
-      <div>This is your room id: {roomID}</div>
+      <div>Welcome </div>
       <iframe
         marginTop="60px"
         src="https://boiling-sands-23438.herokuapp.com"

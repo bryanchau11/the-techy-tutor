@@ -3,8 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import Navigation from "./components/Navigation";
 import data from "../src/auth/data";
+import ChatRoom from "./components/ChatRoom";
 import "./App.css";
-const uuidv4 = require("uuid/v4");
+
 function App() {
   const [name, setName] = useState("");
   const [role, setRole] = useState(null);
@@ -45,17 +46,25 @@ function App() {
   }, [language]);
 
   const goToRoom = (e) => {
-    const roomID = uuidv4();
+    const tutor = e.target.value;
+    const student = data.email;
+    fetch("/filter", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ tutor: tutor, student: student })
+    })
+      .then((response) => response.json())
+      .then((data) => {});
   };
   return (
     <div style={{ backgroundColor: "#BDC7D0" }}>
-      <Navigation />
       {flag === false ? (
         <div>Please login</div>
       ) : role === "tutor" ? (
         <div>
-          Welcome, <span style={{ color: "purple" }}> {name}</span> with role:{" "}
-          {role}
+          <ChatRoom />
         </div>
       ) : (
         <div style={{ backgroundColor: "#BDC7D0" }}>
@@ -101,7 +110,8 @@ function App() {
                         <Button
                           variant="dark"
                           value={item.id}
-                          onClick={(e) => goToRoom(e.target.value)}
+                          as={Link}
+                          to="/chatroom"
                         >
                           LET'S CHAT
                         </Button>

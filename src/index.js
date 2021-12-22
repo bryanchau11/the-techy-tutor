@@ -7,15 +7,17 @@ import Login from "./auth/Login";
 import Signup from "./auth/Signup";
 import reportWebVitals from "./reportWebVitals";
 import ChatRoom from "./components/ChatRoom";
+import Navigation from "./components/Navigation";
 
 const routing = (
   <Router>
     <div style={{ backgroundColor: "#BDC7D0" }}>
+      <Navigation />
       <Routes>
         <Route exact path="/index" element={<App />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/signup" element={<Signup />} />
-        <Route exact path="/chatroom/:roomID" element={<ChatRoom />} />
+        <Route exact path="/chatroom" element={<ChatRoom />} />
       </Routes>
     </div>
   </Router>

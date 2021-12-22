@@ -114,12 +114,17 @@ def get_username():
     Get current username from database.
     """
     try:
+
         username = current_user.username
+        email = current_user.email
         role = current_user.role
     except:
         username = ""
+        email = ""
         role = ""
-    return flask.jsonify({"status": 200, "username": username, "role": role})
+    return flask.jsonify(
+        {"status": 200, "username": username, "role": role, "email": email}
+    )
 
 
 @app.route("/login", methods=["POST", "GET"])
